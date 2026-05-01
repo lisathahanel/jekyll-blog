@@ -1,0 +1,166 @@
+
+
+<style>
+.eed-bx{
+  position:relative;
+  width:100%;
+  max-width:1100px;
+  height:0;
+  padding-bottom:56.25%;
+  margin:20px auto;
+  background:#000;
+  border-radius:10px;
+  overflow:hidden;
+}
+.eed-bx iframe{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  border:none;
+}
+</style>
+
+<script>
+
+// ===== SETTINGS =====
+var delay = 25 * 1000;
+var maxPostsPerFeed = 1;
+
+// ===== FEEDS =====
+var feeds = [
+  {
+    url: "https://www.ssegu.com/feeds/pages/default?alt=json-in-script&max-results=100&callback=feed1",
+    links: [],
+    extra: [
+      "https://www.ssegu.com/2024/12/the-tech-revolution-how-ai-and.html",
+      "https://www.ssegu.com/2024/12/enhancing-cryptocurrency-mining-with.html",
+      "https://www.ssegu.com/2024/12/the-impact-of-reading-on-brain.html",
+      "https://www.ssegu.com/2024/12/supercharge-your-walk-simple-ways-to.html",
+      "https://www.ssegu.com/2024/12/understanding-recent-meta-outage.html"
+    ]
+  },
+  {
+    url: "https://www.gynecologist.shop/feeds/pages/default?alt=json-in-script&max-results=100&callback=feed2",
+    links: [],
+    extra: [
+      "https://www.ssegu.com/2024/12/hidden-gems-in-kampala-secret-date.html",
+      "https://www.ssegu.com/2024/12/budget-friendly-adventures-in-uganda.html",
+      "https://www.ssegu.com/2024/12/start-small-dream-big-top-business.html",
+      "https://www.ssegu.com/2024/12/transforming-e-commerce-reserva-journey.html",
+      "https://www.ssegu.com/2024/12/navigating-challenges-of-influencer.html"
+    ]
+  },
+  {
+    url: "https://www.marketing2advertising.com/feeds/pages/default?alt=json-in-script&max-results=100&callback=feed3",
+    links: [],
+    extra: [
+      "https://www.ssegu.com/2024/12/unleashing-future-dust-moto.html",
+      "https://www.ssegu.com/2024/12/the-power-of-asking-what-steve-jobs.html",
+      "https://www.ssegu.com/2024/12/kickstart-your-morning-5-habits-for.html",
+      "https://www.ssegu.com/2024/12/life-lessons-that-transform-principles.html",
+      "https://www.ssegu.com/2024/11/the-science-behind-emf-protection.html"
+    ]
+  }
+];
+
+var frame = document.getElementById("aoFme");
+
+// ===== PARSER =====
+function parseFeed(data, feedIndex){
+
+  if(!data.feed || !data.feed.entry){
+    finalize(feedIndex);
+    return;
+  }
+
+  var entries = data.feed.entry;
+  var count = 0;
+
+  for(var i=0; i<entries.length; i++){
+
+    if(count >= maxPostsPerFeed) break;
+
+    if(entries[i].link){
+
+      for(var j=0; j<entries[i].link.length; j++){
+
+        var url = entries[i].link[j].href;
+
+        if(url 
+          && url.indexOf("blogger.com") === -1
+          && url.indexOf("#") === -1
+          && url.indexOf("?m=") === -1
+        ){
+          feeds[feedIndex].links.push(url);
+          count++;
+          break;
+        }
+      }
+    }
+  }
+
+  finalize(feedIndex);
+}
+
+// ===== FINALIZE =====
+function finalize(feedIndex){
+  var f = feeds[feedIndex];
+
+  f.links = f.links.concat(f.extra);
+  f.links = [...new Set(f.links)];
+
+  checkLoaded();
+}
+
+// ===== CALLBACKS =====
+function feed1(d){ parseFeed(d,0); }
+function feed2(d){ parseFeed(d,1); }
+function feed3(d){ parseFeed(d,2); }
+
+// ===== LOAD =====
+function loadFeeds(){
+  feeds.forEach(function(f){
+    var s = document.createElement("script");
+    s.src = f.url;
+    document.body.appendChild(s);
+  });
+}
+
+// ===== READY =====
+var loaded = 0;
+function checkLoaded(){
+  loaded++;
+  if(loaded === feeds.length){
+    start();
+  }
+}
+
+// ===== RANDOM PLAYER =====
+function start(){
+
+  playRandom();
+
+  setInterval(function(){
+    playRandom();
+  }, delay);
+}
+
+// ===== RANDOM LOGIC =====
+function playRandom(){
+
+  var feedIndex = Math.floor(Math.random() * feeds.length);
+  var feed = feeds[feedIndex];
+
+  if(feed.links.length === 0) return;
+
+  var linkIndex = Math.floor(Math.random() * feed.links.length);
+
+  frame.src = feed.links[linkIndex];
+}
+
+// START
+loadFeeds();
+
+</script>
