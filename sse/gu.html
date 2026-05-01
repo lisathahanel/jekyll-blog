@@ -1,0 +1,162 @@
+<div class="embed-box">
+  <iframe id="autoFrame" src=""></iframe>
+</div>
+
+<style>
+.embed-box{
+  position:relative;
+  width:100%;
+  max-width:1100px;
+  height:0;
+  padding-bottom:56.25%;
+  margin:20px auto;
+  background:#000;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.embed-box iframe{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  border:none;
+}
+</style>
+
+<script>
+// ===== SETTINGS =====
+var delay = 1 * 60 * 1000; // 1 minute
+var maxPerFeed = 10;
+
+// ===== FEEDS (3 SITES) =====
+var feeds = [
+  {
+    url: "https://www.ssegu.com/feeds/pages/default?alt=json-in-script&max-results=100&callback=feed1",
+    links: [],
+    extra: [
+      "https://www.ssegu.com/2024/12/the-tech-revolution-how-ai-and.html",
+      "https://www.ssegu.com/2024/12/enhancing-cryptocurrency-mining-with.html",
+      "https://www.ssegu.com/2024/12/the-impact-of-reading-on-brain.html",
+      "https://www.ssegu.com/2024/12/supercharge-your-walk-simple-ways-to.html",
+      "https://www.ssegu.com/2024/12/understanding-recent-meta-outage.html"
+    ]
+  },
+  {
+    url: "https://ssegu.com/feeds/pages/default?alt=json-in-script&max-results=100&callback=feed2",
+    links: [],
+    extra: [
+      "https://www.ssegu.com/2024/12/hidden-gems-in-kampala-secret-date.html",
+      "https://www.ssegu.com/2024/12/budget-friendly-adventures-in-uganda.html",
+      "https://www.ssegu.com/2024/12/start-small-dream-big-top-business.html",
+      "https://www.ssegu.com/2024/12/transforming-e-commerce-reserva-journey.html",
+      "https://www.ssegu.com/2024/12/navigating-challenges-of-influencer.html"
+    ]
+  },
+  {
+    url: "https://www.ssegu.com/feeds/pages/default?alt=json-in-script&max-results=100&callback=feed3",
+    links: [],
+    extra: [
+      "https://www.ssegu.com/2024/12/unleashing-future-dust-moto.html",
+      "https://www.ssegu.com/2024/12/the-power-of-asking-what-steve-jobs.html",
+      "https://www.ssegu.com/2024/12/kickstart-your-morning-5-habits-for.html",
+      "https://www.ssegu.com/2024/12/life-lessons-that-transform-principles.html",
+      "https://www.ssegu.com/2024/11/the-science-behind-emf-protection.html"
+    ]
+  }
+];
+
+var currentFeed = 0;
+var currentIndex = 0;
+var frame = document.getElementById("autoFrame");
+
+// ===== FEED PARSER =====
+function parseFeed(data, feedIndex){
+
+  if(!data.feed || !data.feed.entry) return;
+
+  var entries = data.feed.entry;
+
+  for(var i=0; i<entries.length && i < maxPerFeed; i++){
+
+    if(entries[i].link){
+
+      for(var j=0; j<entries[i].link.length; j++){
+
+        var url = entries[i].link[j].href;
+
+        if(url && url.indexOf("blogger.com") === -1){
+          feeds[feedIndex].links.push(url);
+          break;
+        }
+      }
+    }
+  }
+
+  // add extra links
+  feeds[feedIndex].links = feeds[feedIndex].links.concat(feeds[feedIndex].extra);
+
+  checkAllFeedsLoaded();
+}
+
+// ===== CALLBACKS =====
+function feed1(data){ parseFeed(data, 0); }
+function feed2(data){ parseFeed(data, 1); }
+function feed3(data){ parseFeed(data, 2); }
+
+// ===== LOAD FEEDS =====
+function loadFeeds(){
+  feeds.forEach(function(feed){
+    var s = document.createElement("script");
+    s.src = feed.url;
+    document.body.appendChild(s);
+  });
+}
+
+// ===== CHECK READY =====
+var loadedFeeds = 0;
+function checkAllFeedsLoaded(){
+  loadedFeeds++;
+  if(loadedFeeds === feeds.length){
+    startPlayer();
+  }
+}
+
+// ===== PLAYER =====
+function startPlayer(){
+
+  playCurrent();
+
+  setInterval(function(){
+
+    currentIndex++;
+
+    var currentLinks = feeds[currentFeed].links;
+
+    if(currentIndex >= currentLinks.length){
+      currentIndex = 0;
+      currentFeed++;
+
+      if(currentFeed >= feeds.length){
+        currentFeed = 0; // restart all feeds
+      }
+    }
+
+    playCurrent();
+
+  }, delay);
+}
+
+// ===== PLAY =====
+function playCurrent(){
+  var currentLinks = feeds[currentFeed].links;
+
+  if(currentLinks.length > 0){
+    frame.src = currentLinks[currentIndex];
+  }
+}
+
+// START
+loadFeeds();
+</script>
